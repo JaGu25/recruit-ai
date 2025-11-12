@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Card,
   CardContent,
@@ -7,14 +8,26 @@ import {
 } from "@/modules/shared/ui/card";
 import { Input } from "@/modules/shared/ui/input";
 import { Button } from "@/modules/shared/ui/button";
+import { FormError } from "@/modules/shared/ui/form-error";
+
+import { loginFormSchema, type LoginFormValues } from "./schema-login-form";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onSubmit",
+  });
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({ email, password });
+  const handleLogin = (values: LoginFormValues) => {
+    console.log(values);
   };
 
   return (
@@ -29,7 +42,7 @@ const LoginPage = () => {
           </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
             <div className="space-y-2">
               <label
                 htmlFor="email"
@@ -41,10 +54,10 @@ const LoginPage = () => {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                aria-invalid={errors.email ? "true" : "false"}
+                {...register("email")}
               />
+              <FormError message={errors.email?.message} />
             </div>
             <div className="space-y-2">
               <label
@@ -57,13 +70,13 @@ const LoginPage = () => {
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                aria-invalid={errors.password ? "true" : "false"}
+                {...register("password")}
               />
+              <FormError message={errors.password?.message} />
             </div>
             <div className="space-y-3 pt-2">
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 Sign in
               </Button>
             </div>
