@@ -6,6 +6,7 @@ COPY pyproject.toml requirements.txt* ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./src /app
+COPY ./scripts /app/scripts
 COPY alembic.ini .
 COPY alembic ./alembic
 
