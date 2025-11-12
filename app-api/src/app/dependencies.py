@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from app.config.settings import settings
 from app.shared.infrastructure.storage.file_storage import (
   FileStorageService,
-  LocalFileStorageService,
   S3FileStorageService,
 )
 
@@ -25,7 +24,7 @@ def get_db() -> Generator:
 
 @lru_cache
 def get_storage_service() -> FileStorageService:
-  if settings.aws_s3_bucket:
-    return S3FileStorageService(bucket=settings.aws_s3_bucket, region=settings.aws_region)
+  if not settings.aws_s3_bucket:
+    raise RuntimeError("AWS_S3_BUCKET is not configured")
 
-  return LocalFileStorageService()
+  return S3FileStorageService(bucket=settings.aws_s3_bucket, region=settings.aws_region)

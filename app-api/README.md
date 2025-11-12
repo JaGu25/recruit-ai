@@ -62,4 +62,14 @@ The API will be available at `http://localhost:8000` and docs at `http://localho
 
 ### Storage configuration
 
-By default, uploaded resumes are stored locally under `storage/uploads/`. To use Amazon S3 instead, set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, and `AWS_S3_BUCKET` in your `.env`.
+Set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, and `AWS_S3_BUCKET` in your `.env` to enable resume uploads to Amazon S3.
+
+### Database migrations
+
+Run migrations any time the schema changes:
+
+```
+cd app-api
+alembic upgrade head
+docker-compose run backend alembic upgrade head
+```
