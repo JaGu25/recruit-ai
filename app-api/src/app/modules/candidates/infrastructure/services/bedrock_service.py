@@ -66,7 +66,7 @@ class BedrockRagService:
                         "name": name,
                         "cv": {
                             "uri": uri,
-                            "downloadUrl": f"/api/candidates/download?uri={uri}"
+                            "downloadUrl": f"/candidates/download?uri={uri}"
                         }
                     })
 

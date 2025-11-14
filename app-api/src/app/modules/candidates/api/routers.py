@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+import io
+
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db, get_storage_service
@@ -80,4 +83,28 @@ def chat_candidates(payload: CandidateChatRequest) -> CandidateChatResponse:
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail="Chat service returned an unknown response type.",
+    )
+
+
+@router.get("/download")
+def download_candidate_cv(
+    uri: str = Query(..., description="S3 URI of the candidate CV", example="s3://bucket/key"),
+    storage: FileStorageService = Depends(get_storage_service),
+) -> StreamingResponse:
+    try:
+        file_bytes, filename, content_type = storage.download_file(uri)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except Exception as exc: 
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to download the requested CV.",
+        ) from exc
+
+    return StreamingResponse(
+        io.BytesIO(file_bytes),
+        media_type=content_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
