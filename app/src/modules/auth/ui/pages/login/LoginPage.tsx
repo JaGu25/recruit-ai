@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -8,11 +9,16 @@ import {
 } from "@/modules/shared/ui/card";
 import { Input } from "@/modules/shared/ui/input";
 import { Button } from "@/modules/shared/ui/button";
+import { useAuth } from "@/app/providers/auth-context";
+import { useErrorDialog } from "@/app/providers/error-dialog-context";
 import { FormError } from "@/modules/shared/ui/form-error";
 
 import { loginFormSchema, type LoginFormValues } from "./schema-login-form";
 
 const LoginPage = () => {
+  const router = useRouter();
+  const { login } = useAuth();
+  const { showError } = useErrorDialog();
   const {
     register,
     handleSubmit,
@@ -26,8 +32,17 @@ const LoginPage = () => {
     mode: "onSubmit",
   });
 
-  const handleLogin = (values: LoginFormValues) => {
-    console.log(values);
+  const handleLogin = async (values: LoginFormValues) => {
+    try {
+      await login(values);
+      router.navigate({ to: "/recruit/upload" });
+    } catch (error) {
+      if (error instanceof Error) {
+        showError(error.message);
+      } else {
+        showError("An unexpected error occurred. Please try again.");
+      }
+    }
   };
 
   return (

@@ -8,7 +8,7 @@ export const loginFormSchema = z.object({
     .pipe(z.email({ message: "Enter a valid email address" })),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(6, "Password must be at least 6 characters")
     .max(72, "Password must be 72 characters or fewer"),
 });
 

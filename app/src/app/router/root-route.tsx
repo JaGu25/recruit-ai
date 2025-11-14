@@ -1,4 +1,3 @@
-import Footer from "@/modules/shared/ui/footer";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
 export const RootRoute = createRootRoute({

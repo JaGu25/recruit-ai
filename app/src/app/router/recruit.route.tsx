@@ -3,11 +3,16 @@ import { RootRoute } from "./root-route";
 import UploadPage from "@/modules/recruit/ui/pages/upload/UploadPage";
 import ChatPage from "@/modules/recruit/ui/pages/chat/ChatPage";
 import { RecruitLayout } from "@/modules/recruit/ui/layouts/RecruitLayout";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 const RecruitRoute = createRoute({
   getParentRoute: () => RootRoute,
   path: "/recruit",
-  component: RecruitLayout,
+  component: () => (
+    <ProtectedRoute>
+      <RecruitLayout />
+    </ProtectedRoute>
+  ),
 });
 
 export const UploadRoute = createRoute({
