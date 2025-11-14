@@ -48,7 +48,7 @@ export const ErrorDialogProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ErrorDialogContext.Provider value={value}>
       {children}
-      <Dialog open={Boolean(error)} onOpenChange={(open) => !open && hideError()}>
+      <Dialog open={Boolean(error)} onOpenChange={(open) => !open && hideError()} >
         <DialogContent>
           <div className="space-y-4">
             <div className="space-y-1">

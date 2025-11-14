@@ -1,9 +1,9 @@
 import { createRoute } from "@tanstack/react-router";
-import { RootRoute } from "./root-route";
+import { RootRoute } from "../../../app/router/root-route";
 import UploadPage from "@/modules/recruit/ui/pages/upload/UploadPage";
 import ChatPage from "@/modules/recruit/ui/pages/chat/ChatPage";
 import { RecruitLayout } from "@/modules/recruit/ui/layouts/RecruitLayout";
-import { ProtectedRoute } from "./ProtectedRoute";
+import { ProtectedRoute } from "../../../app/router/ProtectedRoute";
 
 const RecruitRoute = createRoute({
   getParentRoute: () => RootRoute,

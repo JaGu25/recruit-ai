@@ -15,8 +15,19 @@ export class AuthRepositoryImpl implements AuthRepository {
             body: JSON.stringify({ email, password })
         })
 
+        if (!response.ok) {
+            try {
+                const errorBody = await response.json() as { detail?: string }
+                if (typeof errorBody?.detail === 'string' && errorBody.detail.trim().length > 0) {
+                    throw new Error(errorBody.detail)
+                }
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    throw error
+                }
+            }
+        }
         const data = await response.json()
-
         return AuthMapper.fromApi(data)
     }
 

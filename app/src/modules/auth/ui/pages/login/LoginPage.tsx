@@ -39,8 +39,6 @@ const LoginPage = () => {
     } catch (error) {
       if (error instanceof Error) {
         showError(error.message);
-      } else {
-        showError("An unexpected error occurred. Please try again.");
       }
     }
   };

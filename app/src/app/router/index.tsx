@@ -1,7 +1,7 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { RootRoute } from "./root-route";
-import { authRoute } from "./auth.route";
-import { recruitRoutes } from "./recruit.route";
+import { authRoute } from "../../modules/auth/router/auth.route";
+import { recruitRoutes } from "../../modules/recruit/routes/recruit.route";
 
 const routeTree = RootRoute.addChildren([authRoute, ...recruitRoutes]);
 
