@@ -13,6 +13,10 @@ export class AuthService {
     async logout(): Promise<void> {
         return this.repository.logout()
     }
+
+    async refresh(refreshToken: string): Promise<UserAuth> {
+        return this.repository.refresh(refreshToken)
+    }
 }
 
 export const authService = new AuthService(authRepository)

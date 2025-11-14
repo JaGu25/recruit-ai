@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { LoginRequestDto } from "@/modules/auth/application/dto/auth.dto";
 import type { UserAuth } from "@/modules/auth/domain/entities/user-auth.entity";
 import { LoginUseCase } from "@/modules/auth/application/use-cases/login.usecase";
+import { RefreshTokenUseCase } from "@/modules/auth/application/use-cases/refresh-token.usecase";
 
 const STORAGE_KEY = "recruit-ai.auth";
 
@@ -12,11 +13,12 @@ type AuthStore = {
   isAuthenticated: boolean;
   login: (credentials: LoginRequestDto) => Promise<void>;
   logout: () => void;
+  refreshSession: () => Promise<boolean>;
 };
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       userAuth: null,
       isAuthenticated: false,
       async login(credentials) {
@@ -29,6 +31,21 @@ export const useAuthStore = create<AuthStore>()(
       },
       logout() {
         set({ userAuth: null, isAuthenticated: false });
+      },
+      async refreshSession() {
+        const refreshToken = get().userAuth?.refreshToken;
+        if (!refreshToken) {
+          set({ userAuth: null, isAuthenticated: false });
+          return false;
+        }
+
+        const useCase = new RefreshTokenUseCase();
+        const userAuth = await useCase.execute(refreshToken);
+        set({
+          userAuth,
+          isAuthenticated: Boolean(userAuth?.accessToken),
+        });
+        return true;
       },
     }),
     {

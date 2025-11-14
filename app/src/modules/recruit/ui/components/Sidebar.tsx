@@ -1,6 +1,9 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Upload, MessageSquare } from "lucide-react";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { Upload, MessageSquare, LogOut } from "lucide-react";
+
 import { cn } from "@/modules/shared/utils/cn";
+import { useAuth } from "@/app/providers/auth-context";
+import { Button } from "@/modules/shared/ui/button";
 
 const menuItems = [
   { label: "Upload CVs", path: "/recruit/upload", icon: Upload },
@@ -9,6 +12,13 @@ const menuItems = [
 
 export const Sidebar = () => {
   const { location } = useRouterState();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    router.navigate({ to: "/login" });
+  };
 
   return (
     <aside className="w-60 h-screen border-r border-border bg-muted/30 flex flex-col py-6 px-4">
@@ -35,8 +45,18 @@ export const Sidebar = () => {
         })}
       </nav>
 
-      <div className="mt-auto text-xs text-muted-foreground px-3 pt-4 border-t border-border">
-        © 2025 Recruit-AI
+      <div className="mt-auto space-y-3 pt-4 border-t border-border">
+        <Button
+          onClick={handleLogout}
+          variant="outline"
+          className="w-full justify-center"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </Button>
+        <p className="text-xs text-muted-foreground px-1 text-center">
+          © 2025 Recruit-AI
+        </p>
       </div>
     </aside>
   );

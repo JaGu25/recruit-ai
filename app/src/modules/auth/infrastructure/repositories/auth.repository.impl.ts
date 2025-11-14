@@ -34,6 +34,34 @@ export class AuthRepositoryImpl implements AuthRepository {
     async logout(): Promise<void> {
         console.log('Logout not implemented')
     }
+
+    async refresh(refreshToken: string): Promise<UserAuth> {
+        const response = await fetch(`${API_URL}/auth/refresh`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ refresh_token: refreshToken })
+        })
+
+        if (!response.ok) {
+            try {
+                const errorBody = await response.json() as { detail?: string }
+                if (typeof errorBody?.detail === 'string' && errorBody.detail.trim().length > 0) {
+                    throw new Error(errorBody.detail)
+                }
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    throw error
+                }
+            }
+
+            throw new Error('Unable to refresh session. Please sign in again.')
+        }
+
+        const data = await response.json()
+        return AuthMapper.fromApi(data)
+    }
 }
 
 export const authRepository = new AuthRepositoryImpl()
