@@ -12,6 +12,10 @@ class CandidateAuthMiddleware(BaseHTTPMiddleware):
 
   async def dispatch(self, request: Request, call_next):
     if request.url.path.startswith("/candidates"):
+      # Allow CORS preflight requests without auth headers
+      if request.method == "OPTIONS":
+        return await call_next(request)
+
       auth_header = request.headers.get("Authorization")
       if not auth_header or not auth_header.lower().startswith("bearer "):
         return JSONResponse({"detail": "Authentication required"}, status_code=401)

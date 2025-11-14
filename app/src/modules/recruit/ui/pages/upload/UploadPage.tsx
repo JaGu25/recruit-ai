@@ -9,6 +9,9 @@ import {
 import { Button } from "@/modules/shared/ui/button";
 import { X, FileText } from "lucide-react";
 import { truncateName } from "@/modules/shared/utils/truncate-name";
+import { useErrorDialog } from "@/app/providers/error-dialog-context";
+import { UploadCandidatesUseCase } from "@/modules/recruit/application/use-cases/upload-candidates.usecase";
+import { toast } from "sonner";
 
 type FilePreview = {
   id: string;
@@ -17,7 +20,9 @@ type FilePreview = {
 };
 
 const UploadPage = () => {
+  const { showError } = useErrorDialog();
   const [files, setFiles] = useState<FilePreview[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map((file) => ({
@@ -38,10 +43,27 @@ const UploadPage = () => {
   };
 
   const handleUpload = async () => {
-    console.log(
-      "Uploading:",
-      files.map((f) => f.name)
-    );
+    if (files.length === 0) {
+      showError("Please select at least one resume before uploading.");
+      return;
+    }
+
+    setIsUploading(true);
+    const useCase = new UploadCandidatesUseCase();
+
+    try {
+      await useCase.execute(files.map((f) => f.file));
+      setFiles([]);
+      toast.success("Resumes uploaded successfully.");
+    } catch (error) {
+      showError(
+        error instanceof Error
+          ? error.message
+          : "Unable to upload resumes. Please try again."
+      );
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -109,8 +131,12 @@ const UploadPage = () => {
 
         {files.length > 0 && (
           <div className="flex justify-end">
-            <Button onClick={handleUpload} className="mt-2">
-              Upload All
+            <Button
+              onClick={handleUpload}
+              className="mt-2"
+              disabled={isUploading}
+            >
+              {isUploading ? "Uploading..." : "Upload All"}
             </Button>
           </div>
         )}
